@@ -18,7 +18,7 @@ public class BaseCounter : MonoBehaviour, IKitchenObjectParent
     public virtual void InteractAlternate(Player player)
     {
         // This method can be overridden by derived classes to implement specific interaction logic
-        Debug.Log("BaseCounter.Interact(); ");
+        Debug.Log("BaseCounter.InteractAlternate(); ");
     }
 
 
