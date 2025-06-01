@@ -1,9 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class CuttingCounter : BaseCounter
 {
+    public event EventHandler<OnProgressChangedEventArgs>OnProgressChanged; // Event to notify when cutting progress changes
+    public class OnProgressChangedEventArgs : EventArgs
+    {
+        public float progressNormalized; // Variable to hold the current cutting progress
+    }
     [SerializeField] private CuttingRecipeSO[] cuttingRecipeSOArray; // Scriptable Object that holds data about the cutting counter
 
     private int cuttingProgress; // Variable to track the cutting progress
@@ -21,6 +27,12 @@ public class CuttingCounter : BaseCounter
                     //plater carring something that can be cut
                     player.GetKitchenObject().SetKitchenObjectParent(this);
                     cuttingProgress = 0; // Reset cutting progress when a new object is placed on the counter
+
+                    CuttingRecipeSO cuttingRecipeSO = GetCuttingRecipeSOWithInput(GetKitchenObject().GetKitchenObjectSO());
+                    OnProgressChanged?.Invoke(this, new OnProgressChangedEventArgs
+                    {
+                        progressNormalized = (float)cuttingProgress / cuttingRecipeSO.cuttingProgressMax
+                    }); // Notify that cutting progress has changed
                 }
             }
             else
@@ -53,6 +65,10 @@ public class CuttingCounter : BaseCounter
             cuttingProgress++; // Increment cutting progress
             CuttingRecipeSO cuttingRecipeSO = GetCuttingRecipeSOWithInput(GetKitchenObject().GetKitchenObjectSO());
 
+            OnProgressChanged?.Invoke(this, new OnProgressChangedEventArgs
+            {
+                progressNormalized = (float)cuttingProgress / cuttingRecipeSO.cuttingProgressMax // Notify that cutting progress has changed
+            });
             if (cuttingProgress >= cuttingRecipeSO.cuttingProgressMax)
             {
 
