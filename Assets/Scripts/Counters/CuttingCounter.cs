@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class CuttingCounter : BaseCounter
+public class CuttingCounter : BaseCounter,IHasProgress
 {
-    public event EventHandler<OnProgressChangedEventArgs>OnProgressChanged; // Event to notify when cutting progress changes
-    public class OnProgressChangedEventArgs : EventArgs
-    {
-        public float progressNormalized; // Variable to hold the current cutting progress
-    }
+    public event EventHandler<IHasProgress.OnProgressChangedEventArgs> OnProgressChanged; // Event to notify when cutting progress changes
+    //public event EventHandler OnCut;
+
     [SerializeField] private CuttingRecipeSO[] cuttingRecipeSOArray; // Scriptable Object that holds data about the cutting counter
 
     private int cuttingProgress; // Variable to track the cutting progress
@@ -29,7 +27,7 @@ public class CuttingCounter : BaseCounter
                     cuttingProgress = 0; // Reset cutting progress when a new object is placed on the counter
 
                     CuttingRecipeSO cuttingRecipeSO = GetCuttingRecipeSOWithInput(GetKitchenObject().GetKitchenObjectSO());
-                    OnProgressChanged?.Invoke(this, new OnProgressChangedEventArgs
+                    OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs
                     {
                         progressNormalized = (float)cuttingProgress / cuttingRecipeSO.cuttingProgressMax
                     }); // Notify that cutting progress has changed
@@ -65,7 +63,7 @@ public class CuttingCounter : BaseCounter
             cuttingProgress++; // Increment cutting progress
             CuttingRecipeSO cuttingRecipeSO = GetCuttingRecipeSOWithInput(GetKitchenObject().GetKitchenObjectSO());
 
-            OnProgressChanged?.Invoke(this, new OnProgressChangedEventArgs
+            OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs
             {
                 progressNormalized = (float)cuttingProgress / cuttingRecipeSO.cuttingProgressMax // Notify that cutting progress has changed
             });
